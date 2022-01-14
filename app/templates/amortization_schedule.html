@@ -1,0 +1,43 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<h1>Amortization Schedule for {{ mortgage.property }}</h1>
+<div class="table-responsive">
+    <table class="table table-bordered table-hover">
+        <thead>
+            <tr>
+                {% if mortgage.start_date %}
+                <th>Date</th>
+                {% else %}
+                <th>Number</th>
+                {% endif %}
+                <th>Payment</th>
+                <th>Interest</th>
+                <th>Principal</th>
+                <th>Total Interest</th>
+                <th>Balance</th>
+            </tr>
+        </thead>
+        {% for installment in schedule %}
+        {% if installment.number > 0 %}
+        {% if mortgage.start_date and (installment.number - 1) % 12 == 0 %}
+        {% call lib.accordion_tag("year{:.0f}".format(installment.number / 12 + 1), dates[installment.number].year,
+        False)%}
+        <tr>
+            {% if mortgage.start_date %}
+            <td>{{ dates[installment.number].strftime("%m/%d/%Y") }}</td>
+            {% else %}
+            <td>{{ installment.number }}</td>
+            {% endif %}
+            <td>{{ "$%.2f"|format(installment.payment) }}</td>
+            <td>{{ "$%.2f"|format(installment.interest) }}</td>
+            <td>{{ "$%.2f"|format(installment.principal) }}</td>
+            <td>{{ "$%.2f"|format(installment.total_interest) }}</td>
+            <td>{{ "$%.2f"|format(installment.balance) }}</td>
+        </tr>
+        {% endcall %}
+        {% endif %}
+        {% endif %}
+        {% endfor %}
+    </table>
+    {% endblock %}

@@ -1,0 +1,12 @@
+{% extends "appbuilder/base.html" %}
+{% block content %}
+<div class="jumbotron">
+    <div class="container">
+        <h1>{{_("Property Manager")}}</h1>
+        <p>Easily manage <a href="{{ url_for('PropertyView.list') }}">properties</a>, <a
+                href="{{ url_for('BookingView.list') }}">bookings</a>, <a
+                href="{{ url_for('MortgageView.list') }}">financing</a>, and much more on your investment properties.
+        </p>
+    </div>
+</div>
+{% endblock %}
