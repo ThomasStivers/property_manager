@@ -109,23 +109,24 @@ class FinanceViewBase(ModelView, CompactCRUDMixin):
     formatters_columns = {
         "amount": display_dollars,
         "date": display_date,
+        "description": Markup,
         "property": link_to_property,
         "tax": display_dollars,
     }
-    # list_widget = ListLinkWidget
 
 
 class ExpenseView(FinanceViewBase):
     datamodel = SQLAInterface(Expense)
+    base_order = ("date", "desc")
     label_columns = {"receipt_link": "Receipt"}
     list_columns = ["payee", "amount", "tax", "date", "property", "receipt_link"]
     list_title = "Expenses"
-    # list_widget = ListLinkWidget
     show_columns = [
         "property",
         "amount",
         "tax",
         "payee",
+        "description",
         "date",
         "tax_deduction",
         "receipt_link",
@@ -426,7 +427,7 @@ appbuilder.add_view(
     category_icon="fa-home",
 )
 appbuilder.add_link(
-    "Add Property", "/propertyview/add", icon="fa-plus", category="Properties"
+    "Add Property", "PropertyView.add", icon="fa-plus", category="Properties"
 )
 appbuilder.add_view(
     MortgageView,
@@ -435,7 +436,7 @@ appbuilder.add_view(
     category="Properties",
 )
 appbuilder.add_link(
-    "Add Mortgage", "/mortgageview/add", icon="fa-plus", category="Properties"
+    "Add Mortgage", "MortgageView.add", icon="fa-plus", category="Properties"
 )
 appbuilder.add_view(
     BookingView,
@@ -445,7 +446,7 @@ appbuilder.add_view(
     category_icon="fa-suitcase",
 )
 appbuilder.add_link(
-    "Add Booking", "/bookingview/add", category="Bookings", icon="fa-plus"
+    "Add Booking", "BookingView.add", category="Bookings", icon="fa-plus"
 )
 appbuilder.add_view(
     ContactView,
@@ -455,7 +456,7 @@ appbuilder.add_view(
     category_icon="fa-user",
 )
 appbuilder.add_link(
-    "Add Contact", "/contactview/add", category="Contacts", icon="fa-plus"
+    "Add Contact", "ContactView.add", category="Contacts", icon="fa-plus"
 )
 appbuilder.add_view(
     ExpenseView,
@@ -465,10 +466,12 @@ appbuilder.add_view(
     category_icon="fa-money",
 )
 appbuilder.add_link(
-    "Add Expense", "/expenseview/add", icon="fa-plus", category="Finance"
+    "Add Expense", "ExpenseView.add", icon="fa-plus", category="Finance"
 )
 appbuilder.add_view(IncomeView, "List Income", icon="fa-table", category="Finance")
-appbuilder.add_link("Add Income", "/incomeview/add", icon="fa-plus", category="Finance")
+appbuilder.add_link(
+    "Add Income", "IncomeView.add", icon="fa-plus", category="Finance"
+)
 appbuilder.add_view(
     InventoryView,
     "List Inventory",
@@ -477,7 +480,10 @@ appbuilder.add_view(
     category_icon="fa-truck",
 )
 appbuilder.add_link(
-    "Add Item to Inventory", "/inventoryview/add", icon="fa-plus", category="Inventory"
+    "Add Item to Inventory",
+    "InventoryView.add",
+    icon="fa-plus",
+    category="Inventory",
 )
 appbuilder.add_view(
     ContactEmailFormView, "Email Contact", icon="fa-envelope", category="Contacts"

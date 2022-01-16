@@ -57,7 +57,7 @@ def link_to_property(property: Property) -> Markup:
     """Display a link to a property's show page."""
     if type(property) is Property:
         html = f'<a href="{url_for("PropertyView.show", pk=property.id)}">'
-        html += f'<i class="fa fa-search"></i> {property}</a>'
+        html += f'<i class="fa fa-search"></i> {str(property)[0:4]}&hellip;</a>'
         return Markup(html)
 
 
