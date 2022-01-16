@@ -1,18 +1,23 @@
-Base Skeleton to start your application using Flask-AppBuilder
---------------------------------------------------------------
+Property Manager
+================
 
-- Install it::
+This tool tracks data associated with managing multiple rental properties.
 
-	pip install flask-appbuilder
-	git clone https://github.com/dpgaspar/Flask-AppBuilder-Skeleton.git
+Installation
+------------
 
-- Run it::
+::
 
-    $ export FLASK_APP=app
-    # Create an admin user
-    $ flask fab create-admin
-    # Run dev server
-    $ flask run
+    $ git clone https://github.com/ThomasStivers/property_manager.git
+    $ cd property_manager
+    $ pip install poetry
+    $ poetry install
 
+Running
+-------
 
-That's it!!
+::
+
+    $ poetry run flask run
+
+This application is built using flask-appbuilder.
