@@ -6,15 +6,11 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import (
     AppBuilder,
     BaseView,
-    expose,
-    has_access,
     ModelView,
-    ModelRestApi,
     SimpleFormView,
 )
 from flask_appbuilder.actions import action
 from flask_appbuilder.views import CompactCRUDMixin
-from flask_appbuilder.widgets import ListItem, ListLinkWidget
 from flask_mail import Message
 from mortgage import Loan
 
@@ -40,10 +36,11 @@ class BookingView(ModelView, CompactCRUDMixin):
 
     datamodel = SQLAInterface(Booking)
     list_title = "Bookings"
-    # list_widget = ListLinkWidget
 
 
 class ContactView(ModelView, CompactCRUDMixin):
+    """Provides add, edit, list, and show support for contacts."""
+
     datamodel = SQLAInterface(Contact)
     base_order = ("last_name", "asc")
     formatters_columns = {
@@ -54,7 +51,6 @@ class ContactView(ModelView, CompactCRUDMixin):
     label_columns = {"full_name": "Name"}
     list_columns = ["full_name", "company", "role", "email", "phone"]
     list_title = "Contacts"
-    # list_widget = ListLinkWidget
 
     @action("email", "Email", icon="fa-envelope")
     def email(self, contacts: Union[Contact, List[Contact]]) -> Markup:
@@ -76,10 +72,6 @@ class ContactEmailFormView(SimpleFormView):
     form = EmailForm
     form_title = "Email Contacts"
     message = "Email sent."
-
-    # def form_get(self, form):
-    #     """Prepare to show the email form."""
-    #     form.subject.data = "Hello"
 
     def form_post(self, form):
         """Process the results of the email form."""
@@ -116,6 +108,8 @@ class FinanceViewBase(ModelView, CompactCRUDMixin):
 
 
 class ExpenseView(FinanceViewBase):
+    """Provides add, edit, list, and show pages for expenses."""
+
     datamodel = SQLAInterface(Expense)
     base_order = ("date", "desc")
     label_columns = {"receipt_link": "Receipt"}
@@ -134,10 +128,11 @@ class ExpenseView(FinanceViewBase):
 
 
 class IncomeView(FinanceViewBase):
+    """Provides add, edit, list, and show pages for income sources."""
+
     datamodel = SQLAInterface(Income)
     list_columns = ["amount", "payer", "date", "property"]
     list_title = "Income"
-    # list_widget = ListLinkWidget
 
 
 class InventoryView(ModelView, CompactCRUDMixin):
@@ -170,7 +165,6 @@ class InventoryView(ModelView, CompactCRUDMixin):
         "property",
     ]
     list_title = "Inventory"
-    # list_widget = ListLinkWidget
     show_title = "Show Inventory Item"
 
 
@@ -205,7 +199,6 @@ class MortgageView(ModelView, CompactCRUDMixin):
         "property",
     ]
     list_title = "Mortgages"
-    # list_widget = ListLinkWidget
     formatters_columns = {
         "amount": display_dollars,
         "closing": display_dollars,
@@ -298,7 +291,6 @@ class PropertyView(ModelView, CompactCRUDMixin):
         "total_monthly_revenue",
     ]
     list_title = "Properties"
-    # list_widget = ListLinkWidget
     formatters_columns = {
         "association_fee": display_dollars,
         "cost": display_dollars,
@@ -412,11 +404,11 @@ class PropertyView(ModelView, CompactCRUDMixin):
 
 ContactView.related_views = [PropertyView]
 PropertyView.related_views = [
+    BookingView,
+    ContactView,
     ExpenseView,
     IncomeView,
     InventoryView,
-    ContactView,
-    BookingView,
     MortgageView,
 ]
 appbuilder.add_view(
@@ -469,9 +461,7 @@ appbuilder.add_link(
     "Add Expense", "ExpenseView.add", icon="fa-plus", category="Finance"
 )
 appbuilder.add_view(IncomeView, "List Income", icon="fa-table", category="Finance")
-appbuilder.add_link(
-    "Add Income", "IncomeView.add", icon="fa-plus", category="Finance"
-)
+appbuilder.add_link("Add Income", "IncomeView.add", icon="fa-plus", category="Finance")
 appbuilder.add_view(
     InventoryView,
     "List Inventory",
