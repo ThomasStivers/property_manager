@@ -92,7 +92,7 @@ class Expense(Model, AuditMixin):
     amount = Column(Float, nullable=False)
     tax = Column(Float, default=0, nullable=False)
     payee = Column(String(30), nullable=False)
-    # description = Column(Text)
+    description = Column(Text)
     date = Column(Date)
     tax_deduction = Column(Boolean, default=True)
     receipt = Column(FileColumn)

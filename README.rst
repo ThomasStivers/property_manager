@@ -20,4 +20,4 @@ Running
 
     $ poetry run flask run
 
-This application is built using flask-appbuilder.
+This application is built using `flask-appbuilder <https://github.com/dpgaspar/flask-appbuilder/>`_.
