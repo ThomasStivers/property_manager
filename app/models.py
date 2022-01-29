@@ -2,30 +2,31 @@ import builtins
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 from decimal import Decimal
-from enum import auto
-from mortgage import Loan
-from sqlalchemy.sql.expression import null
-from sqlalchemy import func
-from sqlalchemy.sql.schema import PrimaryKeyConstraint
+
+# from enum import auto
 from flask import Markup, url_for
 from flask_appbuilder import Model
 from flask_appbuilder.filemanager import get_file_original_name
 from flask_appbuilder.models.decorators import renders
 from flask_appbuilder.models.mixins import AuditMixin, FileColumn, ImageColumn
+from mortgage import Loan
 from sqlalchemy import (
     Boolean,
     Column,
     Date,
     Enum,
     Float,
+    ForeignKey,
+    func,
     Integer,
     String,
     Table,
     Text,
-    ForeignKey,
 )
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relation, relationship
+from sqlalchemy.sql.expression import null
+from sqlalchemy.sql.schema import PrimaryKeyConstraint
 
 from app import db
 
@@ -44,16 +45,14 @@ class Booking(Model):
     id = Column(Integer, primary_key=True)
     property_id = Column(Integer, ForeignKey("property.id"))
     property = relationship("Property", backref="bookings")
-    # contact_id = Column(Integer, ForeignKey("Contact.id"), nullable=False)
     contact = relationship("Contact", backref="bookings")
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
-    # guest_name = Column(String(30), nullable=False)
     url = Column(String(255))
     notes = Column(Text)
 
     def __repr__(self):
-        return f"{self.guest_name} booking {self.start_date} through {self.end_date}"
+        return f"{self.contact.full_name} booking {self.start_date} through {self.end_date}"
 
 
 class Contact(Model):
@@ -75,11 +74,13 @@ class Contact(Model):
     role = Column(String(30))
 
     def __repr__(self):
-        return f"{self.first_name} {self.last_name}"
+        return self.full_name
 
-    @builtins.property
+    @hybrid_property
     def full_name(self):
-        return repr(self)
+        """Returns the full name of a contact for convenience."""
+
+        return self.first_name + " " + self.last_name
 
 
 class Expense(Model, AuditMixin):

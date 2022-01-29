@@ -1,8 +1,7 @@
 from datetime import date
-from typing import List, Union
 from dateutil.relativedelta import relativedelta
+from typing import List, Union
 from flask import flash, Markup, redirect, render_template, session, url_for
-from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder import (
     AppBuilder,
     BaseView,
@@ -10,6 +9,7 @@ from flask_appbuilder import (
     SimpleFormView,
 )
 from flask_appbuilder.actions import action
+from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin
 from flask_mail import Message
 from mortgage import Loan
