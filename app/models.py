@@ -172,6 +172,21 @@ class Inventory(Model, AuditMixin):
         return self.cost * self.quantity
 
 
+class Link(Model):
+    """A link to a URL associated with a property."""
+
+    id = Column(Integer, primary_key=True)
+    property_id = Column(Integer, ForeignKey("property.id"))
+    property = relationship("Property", backref="links")
+    url = Column(Text, nullable=False)
+    text = Column(String(255))
+
+    def __repr__(self):
+        return Markup(
+            f'<a href="{self.url}">{self.text if self.text else self.url}</a>'
+        )
+
+
 class Mortgage(Model, AuditMixin):
     """Represents a mortgage for a property."""
 
@@ -241,7 +256,7 @@ class Property(Model, AuditMixin):
     association_fee = Column(Float)
     management_fee = Column(Float)
     insurance = Column(Float)
-    url = Column(String(255))
+    # url = Column(String(255))
     description = Column(Text)
     nightly_rate = Column(Float)
     occupancy = Column(Integer)
@@ -271,6 +286,21 @@ class Property(Model, AuditMixin):
             months = 12
         amount = base * (months / 330)
         return amount
+
+    @property
+    def list_links(self):
+        """Returns a list of links related to the property."""
+        count = len(self.links)
+        if count == 0:
+            return
+        elif count == 1:
+            return Markup(self.links[0])
+        elif count >= 2:
+            value = "<ul>\n"
+            for link in self.links:
+                value += f"<li>{link}</li>\n"
+            value += "</ul>\n"
+            return Markup(value)
 
     @property
     def tax_deduction(self):

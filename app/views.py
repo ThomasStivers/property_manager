@@ -17,7 +17,16 @@ from mortgage import Loan
 from app import mail
 from . import appbuilder, db
 from .forms import EmailForm
-from .models import Booking, Contact, Expense, Income, Inventory, Mortgage, Property
+from .models import (
+    Booking,
+    Contact,
+    Expense,
+    Income,
+    Inventory,
+    Link,
+    Mortgage,
+    Property,
+)
 from .utils import (
     display_date,
     display_dollars,
@@ -29,6 +38,7 @@ from .utils import (
     link_to_property,
     unordered_property_list,
 )
+import app
 
 
 class BookingView(ModelView, CompactCRUDMixin):
@@ -168,6 +178,15 @@ class InventoryView(ModelView, CompactCRUDMixin):
     show_title = "Show Inventory Item"
 
 
+class LinkView(ModelView, CompactCRUDMixin):
+    """Configures the add, edit, remove, and show views for links related to properties."""
+
+    datamodel = SQLAInterface(Link)
+    description_columns = {"text": "Text to display"}
+    list_columns = ["text", "property"]
+    list_title = "Links"
+
+
 class MortgageView(ModelView, CompactCRUDMixin):
     """Configures the add, edit, list, and show views on the Mortgage class."""
 
@@ -278,11 +297,11 @@ class PropertyView(ModelView, CompactCRUDMixin):
         "tax": "Annual property tax.",
     }
     label_columns = {
+        "list_links": "Links",
         "tax_deduction": "Tax Deduction",
         "total_expenses": "Total Expenses",
         "total_income": "Total Income",
         "total_inventory": "Inventory Value",
-        "url": "URL",
     }
     list_columns = [
         "address",
@@ -303,7 +322,6 @@ class PropertyView(ModelView, CompactCRUDMixin):
         "mortgage": link_to_mortgage,
         "nightly_rate": display_dollars,
         "occupancy": display_percent,
-        "url": lambda x: Markup(f'<a href="{x}">{x}</a>'),
         "tax": display_dollars,
         "tax_deduction": display_table,
         "total_expenses": display_dollars,
@@ -372,11 +390,14 @@ class PropertyView(ModelView, CompactCRUDMixin):
     )
     editable_info_fieldset = (
         "Info",
-        {"fields": ["description", "url"], "expanded": False},
+        {"fields": ["description"], "expanded": False},
     )
     info_fieldset = (
         "Info",
-        {"fields": ["total_inventory", "description", "url"], "expanded": False},
+        {
+            "fields": ["total_inventory", "description", "list_links"],
+            "expanded": False,
+        },
     )
     location_fieldset = (
         "Location",
@@ -408,6 +429,7 @@ PropertyView.related_views = [
     ContactView,
     ExpenseView,
     IncomeView,
+    LinkView,
     InventoryView,
     MortgageView,
 ]
@@ -475,6 +497,7 @@ appbuilder.add_link(
     icon="fa-plus",
     category="Inventory",
 )
+appbuilder.add_view(LinkView, "List Links", category="properties")
 appbuilder.add_view(
     ContactEmailFormView, "Email Contact", icon="fa-envelope", category="Contacts"
 )

@@ -1,13 +1,13 @@
 [tool.poetry]
 name = "property_manager"
-version = "1.0.0"
+version = "1.1.0"
 description = "Tool for managing vacation rental properties."
 authors = ["Thomas Stivers <thomas.stivers@gmail.com>"]
 license = "GPL"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-Flask-AppBuilder = "^3.3.4"
+Flask-AppBuilder = "=3.4.3"
 Flask-Migrate = "^3.1.0"
 mortgage = "^1.0.5"
 mysqlclient = "^2.0.3"
