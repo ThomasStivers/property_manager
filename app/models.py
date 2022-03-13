@@ -43,9 +43,13 @@ class Booking(Model):
     """Represents a vacation booking."""
 
     id = Column(Integer, primary_key=True)
+    contact_id = Column(Integer, ForeignKey("contact.id"))
+    income_id = Column(Integer, ForeignKey("income.id"))
     property_id = Column(Integer, ForeignKey("property.id"))
-    property = relationship("Property", backref="bookings")
     contact = relationship("Contact", backref="bookings")
+    income = relationship("Income", backref="bookings")
+    property = relationship("Property", backref="bookings")
+    nightly_rate = column(Float)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     url = Column(String(255))
@@ -59,7 +63,7 @@ class Contact(Model):
     """Tracks people associated with properties, mortgages, expenses, and income."""
 
     id = Column(Integer, primary_key=True)
-    booking_id = Column(Integer, ForeignKey("booking.id"))
+    # booking_id = Column(Integer, ForeignKey("booking.id"))
     mortgage_id = Column(Integer, ForeignKey("mortgage.id"))
     mortgage = relationship("Mortgage")
     # expense_id = Column(Integer, ForeignKey("expense.id"))
@@ -256,7 +260,6 @@ class Property(Model, AuditMixin):
     association_fee = Column(Float)
     management_fee = Column(Float)
     insurance = Column(Float)
-    # url = Column(String(255))
     description = Column(Text)
     nightly_rate = Column(Float)
     occupancy = Column(Integer)

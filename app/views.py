@@ -497,7 +497,7 @@ appbuilder.add_link(
     icon="fa-plus",
     category="Inventory",
 )
-appbuilder.add_view(LinkView, "List Links", category="properties")
+appbuilder.add_view(LinkView, "List Links", category="Properties")
 appbuilder.add_view(
     ContactEmailFormView, "Email Contact", icon="fa-envelope", category="Contacts"
 )
