@@ -22,6 +22,7 @@ from sqlalchemy import (
     String,
     Table,
     Text,
+    UniqueConstraint,
 )
 from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import backref, relation, relationship
@@ -45,11 +46,11 @@ class Booking(Model):
     id = Column(Integer, primary_key=True)
     contact_id = Column(Integer, ForeignKey("contact.id"))
     income_id = Column(Integer, ForeignKey("income.id"))
-    property_id = Column(Integer, ForeignKey("property.id"))
+    property_id = Column(Integer, ForeignKey("property.id"), nullable=False)
     contact = relationship("Contact", backref="bookings")
     income = relationship("Income", backref="bookings")
     property = relationship("Property", backref="bookings")
-    nightly_rate = column(Float)
+    nightly_rate = Column(Float)
     start_date = Column(Date, nullable=False)
     end_date = Column(Date, nullable=False)
     url = Column(String(255))
@@ -58,10 +59,22 @@ class Booking(Model):
     def __repr__(self):
         return f"{self.contact.full_name} booking {self.start_date} through {self.end_date}"
 
+    @builtins.property
+    def days(self):
+        return (self.end_date - self.start_date).days
+
+    @builtins.property
+    def revenue(self):
+        nightly_rate = float(self.nightly_rate)
+        nightly_fee = self.property.management_fee / 100 * nightly_rate
+        nightly_revenue = nightly_rate - nightly_fee
+        return nightly_revenue * self.days
+
 
 class Contact(Model):
     """Tracks people associated with properties, mortgages, expenses, and income."""
 
+    __table_args__ = (UniqueConstraint("first_name", "last_name"),)
     id = Column(Integer, primary_key=True)
     # booking_id = Column(Integer, ForeignKey("booking.id"))
     mortgage_id = Column(Integer, ForeignKey("mortgage.id"))

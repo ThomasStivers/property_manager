@@ -13,6 +13,8 @@ from flask_appbuilder.models.sqla.interface import SQLAInterface
 from flask_appbuilder.views import CompactCRUDMixin
 from flask_mail import Message
 from mortgage import Loan
+from sqlalchemy.exc import IntegrityError
+from wtforms import TextField
 
 from app import mail
 from . import appbuilder, db
@@ -45,7 +47,54 @@ class BookingView(ModelView, CompactCRUDMixin):
     """Provides add, edit, and show support for bookings."""
 
     datamodel = SQLAInterface(Booking)
+    add_form_extra_fields = {
+        "contact_fn": TextField("First Name"),
+        "contact_ln": TextField("Last Name"),
+    }
+    add_columns = [
+        "contact_fn",
+        "contact_ln",
+        "nightly_rate",
+        "start_date",
+        "end_date",
+        "url",
+        "notes",
+        "property",
+    ]
+    formatters_columns = {"nightly_rate": display_dollars, "revenue": display_dollars}
+    list_columns = ["nightly_rate", "days", "revenue"]
     list_title = "Bookings"
+
+    def pre_add(self, item):
+        """Adds a Contact and an Income record before the Booking is added."""
+
+        # Create a new Contact with a role of Guest from the name entered into the Add Booking form.
+        guest = Contact(
+            first_name=item.contact_fn, last_name=item.contact_ln, role="guest"
+        )
+        db.session.add(guest)
+        # Contact has a unique constraint on first_name, last_name so we use it to avoid duplicates.
+        try:
+            db.session.commit()
+        except IntegrityError:
+            # A Contact exists so clean up the session.
+            db.session.rollback()
+            # This guest already exists, so let's get its id.
+            guest = (
+                db.session.query(Contact)
+                .filter_by(first_name=item.contact_fn, last_name=item.contact_ln)
+                .one()
+            )
+        item.contact_id = guest.id
+        income = Income(
+            amount=item.revenue,
+            payer=f"{item.contact_fn} {item.contact_ln}",
+            date=item.end_date,
+            property_id=item.property.id,
+        )
+        db.session.add(income)
+        db.session.commit()
+        item.income_id = income.id
 
 
 class ContactView(ModelView, CompactCRUDMixin):

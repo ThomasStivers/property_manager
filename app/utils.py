@@ -34,7 +34,10 @@ def display_table(data):
 
 def link_to_email(email: str) -> Markup:
     """Turn email addresses into hyperlinks."""
-    return Markup(f'<a href="mailto:{email}">{email}</a>')
+    if email:
+        return Markup(f'<a href="mailto:{email}">{email}</a>')
+    else:
+        return Markup("")
 
 
 def link_to_expense(expense: Expense) -> Markup:
