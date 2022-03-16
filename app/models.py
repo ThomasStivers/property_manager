@@ -65,7 +65,7 @@ class Booking(Model):
 
     @builtins.property
     def revenue(self):
-        nightly_rate = float(self.nightly_rate)
+        nightly_rate = float(self.nightly_rate if self.nightly_rate > 0 else 0)
         nightly_fee = self.property.management_fee / 100 * nightly_rate
         nightly_revenue = nightly_rate - nightly_fee
         return nightly_revenue * self.days
